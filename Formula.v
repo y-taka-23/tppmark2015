@@ -33,10 +33,12 @@ Fixpoint detached_not (f : formula) : nat :=
 
 Function move_not (f : formula) {measure detached_not} : formula :=
     match f with
+    | Not True        => Not True
+    | Not False       => Not False
+    | Not (Var n)     => Not (Var n)
     | Not (Not f1)    => move_not f1
     | Not (And f1 f2) => Or  (move_not (Not f1)) (move_not (Not f2))
     | Not (Or  f1 f2) => And (move_not (Not f1)) (move_not (Not f2))
-    | Not f1          => Not (move_not f1)
     | And f1 f2       => And (move_not f1) (move_not f2)
     | Or  f1 f2       => Or  (move_not f1) (move_not f2)
     | _               => f
