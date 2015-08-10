@@ -117,7 +117,7 @@ Proof.
            (Max.le_max_l _ _) (lt_n_Sn _)).
 Defined.
 
-Function move_not (f : formula) : formula :=
+Fixpoint move_not (f : formula) : formula :=
     match f with
     | True   => True
     | False  => False
