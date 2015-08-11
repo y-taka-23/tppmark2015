@@ -135,3 +135,185 @@ Fixpoint move_not (f : formula) : formula :=
     | Or    f1 f2 => Or    (move_not f1) (move_not f2)
     | Imply f1 f2 => Imply (move_not f1) (move_not f2)
     end.
+
+Fixpoint or_size (f : formula) : nat :=
+    match f with
+    | True        => 0
+    | False       => 0
+    | Var n       => 0
+    | Not   f1    => or_size f1
+    | And   f1 f2 => or_size f1 + or_size f2
+    | Or    f1 f2 => S (height f1 + height f2)
+    | Imply f1 f2 => or_size f1 + or_size f2
+    end.
+
+Function distr_or_aux (f : formula) {measure or_size} : formula :=
+    match f with
+    | True   => True
+    | False  => False
+    | Var n  => Var n
+    | Not f1 => Not f1
+    | And f1 f2 => And f1 f2
+    | Or  f1 f2 => match f1, f2 with
+        | f1, And f1' f2' =>
+            And (distr_or_aux (Or f1 f1')) (distr_or_aux (Or f1 f2'))
+        | And f1' f2', f2 =>
+            And (distr_or_aux (Or f1' f2)) (distr_or_aux (Or f2' f2))
+        | f1, f2 => Or f1 f2
+        end
+    | Imply f1 f2 => Imply f1 f2
+    end.
+Proof.
+    (* Case : f = Or True (And f1' f2') : distr_or_aux (Or True f2') *)
+    intros _ _ _ _ f1' f2' _ _ .
+    simpl.
+    apply lt_n_S.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_r _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or True (And f1' f2') : distr_or_aux (Or True f1') *)
+    intros _ _ _ _ f1' f2' _ _ .
+    simpl.
+    apply lt_n_S.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_l _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or False (And f1' f2') : distr_or_aux (Or False f2') *)
+    intros _ _ _ _ f1' f2' _ _ .
+    simpl.
+    apply lt_n_S.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_r _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or True (And f1' f2') : distr_or_aux (Or False f1') *)
+    intros _ _ _ _ f1' f2' _ _ .
+    simpl.
+    apply lt_n_S.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_l _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or (Var n) (And f1' f2') : distr_or_aux (Or (Var n) f2') *)
+    intros _ _ _ n _ f1' f2' _ _ .
+    simpl.
+    apply lt_n_S.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_r _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or (Var n) (And f1' f2') : distr_or_aux (Or (Var n) f1') *)
+    intros _ _ _ n _ f1' f2' _ _ .
+    simpl.
+    apply lt_n_S.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_l _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or (Not f0) (And f1' f2') : distr_or_aux (Or (Not f0) f2' *)
+    intros _ _ _ f0 _ f1' f2' _ _.
+    simpl.
+    repeat apply lt_n_S.
+    apply plus_lt_compat_l.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_r _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or (Not f0) (And f1' f2') : distr_or_aux (Or (Not f0) f1' *)
+    intros _ _ _ f0 _ f1' f2' _ _.
+    simpl.
+    repeat apply lt_n_S.
+    apply plus_lt_compat_l.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_l _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or (And f1 f2') True : distr_or_aux (Or f2' True) *)
+    intros _ _ _ f1' f2' _ _ _.
+    simpl.
+    repeat apply lt_n_S.
+    repeat rewrite plus_0_r.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_r _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or (And f1 f2') True : distr_or_aux (Or f1' True) *)
+    intros _ _ _ f1' f2' _ _ _.
+    simpl.
+    repeat apply lt_n_S.
+    repeat rewrite plus_0_r.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_l _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or (And f1 f2') False : distr_or_aux (Or f2' False) *)
+    intros _ _ _ f1' f2' _ _ _.
+    simpl.
+    repeat apply lt_n_S.
+    repeat rewrite plus_0_r.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_r _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or (And f1 f2') False : distr_or_aux (Or f1' False) *)
+    intros _ _ _ f1' f2' _ _ _.
+    simpl.
+    repeat apply lt_n_S.
+    repeat rewrite plus_0_r.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_l _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or (And f1 f2') (Var n) : distr_or_aux (Or f2' (Var n)) *)
+    intros _ _ _ f1' f2' _ n _ _.
+    simpl.
+    repeat apply lt_n_S.
+    repeat rewrite plus_0_r.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_r _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or (And f1 f2') (Var n) : distr_or_aux (Or f1' (Var n)) *)
+    intros _ _ _ f1' f2' _ n _ _.
+    simpl.
+    repeat apply lt_n_S.
+    repeat rewrite plus_0_r.
+    apply (le_lt_trans _ (Peano.max (height f1') (height f2')) _
+           (Max.le_max_l _ _) (lt_n_Sn _)).
+
+    (* Case : f = Or (And f1' f2') (Not f0) : distr_or_aux (Or f2' (Not f0)) *)
+    intros _ _ _ f1' f2' _ f0 _ _.
+    simpl.
+    apply lt_n_S.
+    apply le_lt_n_Sm.
+    apply (plus_le_compat_r _ _ _ (Max.le_max_r _ _)).
+
+    (* Case : f = Or (And f1' f2') (Not f0) : distr_or_aux (Or f1' (Not f0)) *)
+    intros _ _ _ f1' f2' _ f0 _ _.
+    simpl.
+    apply lt_n_S.
+    apply le_lt_n_Sm.
+    apply (plus_le_compat_r _ _ _ (Max.le_max_l _ _)).
+
+    (* Case : f = Or (And f1' f2') (And f1'0 f2'0) : distr_or_aux (Or (And f1' f2') f2'0) *)
+    intros _ _ _ f1' f2' _  f1'0 f2'0 _ _.
+    simpl.
+    repeat apply lt_n_S.
+    apply plus_lt_compat_l.
+    apply (le_lt_n_Sm _ _ (Max.le_max_r _ _)).
+
+    (* Case : f = Or (And f1' f2') (And f1'0 f2'0) : distr_or_aux (Or (And f1' f2') f1'0) *)
+    intros _ _ _ f1' f2' _  f1'0 f2'0 _ _.
+    simpl.
+    repeat apply lt_n_S.
+    apply plus_lt_compat_l.
+    apply (le_lt_n_Sm _ _ (Max.le_max_l _ _)).
+
+
+Admitted.
+
+Fixpoint distr_or (f : formula) : formula :=
+    match f with
+    | True   => True
+    | False  => False
+    | Var n  => Var n
+    | Not f1 => Not (distr_or f1)
+    | And f1 f2 => And (distr_or f1) (distr_or f2)
+    | Or  f1 f2 => match f1, f2 with
+        | f1, And f1' f2' =>
+            And (distr_or_aux (Or f1 f1')) (distr_or_aux (Or f1 f2'))
+        | And f1' f2', f2 =>
+            And (distr_or_aux (Or f1' f2)) (distr_or_aux (Or f2' f2))
+        | f1, f2 => Or (distr_or f1) (distr_or f2)
+        end
+    | Imply f1 f2 => Imply (distr_or f1) (distr_or f2)
+    end.
