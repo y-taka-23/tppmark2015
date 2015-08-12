@@ -298,8 +298,66 @@ Proof.
     apply plus_lt_compat_l.
     apply (le_lt_n_Sm _ _ (Max.le_max_l _ _)).
 
+    (* Case : f = Or (And f1' f2') (Or f0 f3) : distr_or_aux (Or f2' (Or f0 f3)) *)
+    intros _ _ _ f1' f2' _ f0 f3 _ _.
+    simpl.
+    apply lt_n_S.
+    apply le_lt_n_Sm.
+    apply plus_le_compat_r.
+    apply Max.le_max_r.
 
-Admitted.
+    (* Case : f = Or (And f1' f2') (Or f0 f3) : distr_or_aux (Or f1' (Or f0 f3)) *)
+    intros _ _ _ f1' f2' _ f0 f3 _ _.
+    simpl.
+    apply lt_n_S.
+    apply le_lt_n_Sm.
+    apply plus_le_compat_r.
+    apply Max.le_max_l.
+
+    (* Case : f = Or (And f1' f2') (Imply f0 f3) : distr_or_aux (Or f2' (Imply f0 f3)) *)
+    intros _ _ _ f1' f2' _ f0 f3 _ _.
+    simpl.
+    apply lt_n_S.
+    apply le_lt_n_Sm.
+    apply plus_le_compat_r.
+    apply Max.le_max_r.
+
+    (* Case : f = Or (And f1' f2') (Imply f0 f3) : distr_or_aux (Or f1' (Imply f0 f3)) *)
+    intros _ _ _ f1' f2' _ f0 f3 _ _.
+    simpl.
+    apply lt_n_S.
+    apply le_lt_n_Sm.
+    apply plus_le_compat_r.
+    apply Max.le_max_l.
+
+    (* Case : f = Or (Or f0 f3) (And f1' f2') : distr_or_aux (Or (Or f0 f3) f2') *)
+    intros _ _ _ f0 f3 _ f1' f2' _ _.
+    simpl.
+    repeat apply lt_n_S.
+    apply plus_lt_compat_l.
+    apply (le_lt_n_Sm _ _ (Max.le_max_r _ _)).
+
+    (* Case : f = Or (Or f0 f3) (And f1' f2') : distr_or_aux (Or (Or f0 f3) f1') *)
+    intros _ _ _ f0 f3 _ f1' f2' _ _.
+    simpl.
+    repeat apply lt_n_S.
+    apply plus_lt_compat_l.
+    apply (le_lt_n_Sm _ _ (Max.le_max_l _ _)).
+
+    (* Case : f = Or (Imply f0 f3) (And f1' f2') : distr_or_aux (Or (Imply f0 f3) f2' *)
+    intros _ _ _ f0 f3 _ f1' f2' _ _.
+    simpl.
+    repeat apply lt_n_S.
+    apply plus_lt_compat_l.
+    apply (le_lt_n_Sm _ _ (Max.le_max_r _ _)).
+
+    (* Case : f = Or (Imply f0 f3) (And f1' f2') : distr_or_aux (Or (Imply f0 f3) f1') *)
+    intros _ _ _ f0 f3 _ f1' f2' _ _.
+    simpl.
+    repeat apply lt_n_S.
+    apply plus_lt_compat_l.
+    apply (le_lt_n_Sm _ _ (Max.le_max_l _ _)).
+Defined.
 
 Fixpoint distr_or (f : formula) : formula :=
     match f with
