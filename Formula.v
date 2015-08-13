@@ -136,6 +136,38 @@ Fixpoint move_not (f : formula) : formula :=
     | Imply f1 f2 => Imply (move_not f1) (move_not f2)
     end.
 
+Fixpoint eval_const (f : formula) : formula :=
+    match f with
+    | True  => True
+    | False => False
+    | Var n => Var n
+    | Not f1 => match eval_const f1 with
+        | True  => False
+        | False => True
+        | f1'   => Not f1'
+        end
+    | And f1 f2 => match eval_const f1, eval_const f2 with
+        | True,  f2'   => f2'
+        | False, f2'   => False
+        | f1',   True  => f1'
+        | f1',   False => False
+        | f1',   f2'   => And f1' f2'
+        end
+    | Or f1 f2 => match eval_const f1, eval_const f2 with
+        | True,  f2'   => True
+        | False, f2'   => f2'
+        | f1',   True  => True
+        | f1',   False => f1'
+        | f1',   f2'   => Or f1' f2'
+        end
+    | Imply f1 f2 => match eval_const f1, eval_const f2 with
+        | True,  False => False
+        | False, f2'   => True
+        | f1',   True  => True
+        | f1',   f2'   => Imply f1' f2'
+        end
+    end.
+
 Fixpoint or_size (f : formula) : nat :=
     match f with
     | True        => 0
