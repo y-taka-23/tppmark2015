@@ -38,13 +38,13 @@ Inductive equiv : formula -> formula -> Prop :=
     | equiv_or_cong_r    : forall f1 f2 f3 : formula,
                            equiv f2 f3 -> equiv (Or f1 f2) (Or f1 f3)
     | equiv_imply_cong_l : forall f1 f2 f3 : formula,
-                           equiv f1 f2 -> equiv (Imply f1 f3) (And f2 f3)
+                           equiv f1 f2 -> equiv (Imply f1 f3) (Imply f2 f3)
     | equiv_imply_cong_r : forall f1 f2 f3 : formula,
-                           equiv f2 f3 -> equiv (Imply f1 f1) (Or f1 f3)
+                           equiv f2 f3 -> equiv (Imply f1 f2) (Imply f1 f3)
     | equiv_refl         : forall f : formula, equiv f f
     | equiv_sym          : forall f1 f2 : formula, equiv f1 f2 -> equiv f2 f1
     | equiv_trans        : forall f1 f2 f3 : formula,
-                           equiv f1 f2 -> equiv f2 f3 -> equiv f1 f2
+                           equiv f1 f2 -> equiv f2 f3 -> equiv f1 f3
     | equiv_imply_or     : forall f1 f2 : formula,
                            equiv (Imply f1 f2) (Or (Not f1) f2).
 
@@ -58,6 +58,43 @@ Fixpoint elim_imply (f : formula) : formula :=
     | Or    f1 f2 => Or (elim_imply f1) (elim_imply f2)
     | Imply f1 f2 => Or (Not (elim_imply f1)) (elim_imply f2)
     end.
+
+Lemma elim_imply_equiv :
+    forall f : formula, equiv (elim_imply f) f.
+Proof.
+    induction f as [| | n | f1 H | f1 H1 f2 H2 | f1 H1 f2 H2 | f1 H1 f2 H2];
+    simpl.
+
+        (* Case : f = True *)
+        apply equiv_refl.
+
+        (* Case : f = False *)
+        apply equiv_refl.
+
+        (* Case : f = Var n *)
+        apply equiv_refl.
+
+        (* Case : f = Not f1 *)
+        apply (equiv_not_cong _ _ H).
+
+        (* Case : f = And f1 f2 *)
+        apply equiv_trans with (And f1 (elim_imply f2)).
+        apply (equiv_and_cong_l _ _ _ H1).
+        apply (equiv_and_cong_r _ _ _ H2).
+
+        (* Case : f = Or f1 f2 *)
+        apply equiv_trans with (Or f1 (elim_imply f2)).
+        apply (equiv_or_cong_l _ _ _ H1).
+        apply (equiv_or_cong_r _ _ _ H2).
+
+        (* Case : f = Imply f1 f2 *)
+        apply equiv_sym.
+        apply equiv_trans with (Imply (elim_imply f1) (elim_imply f2)).
+        apply equiv_trans with (Imply f1 (elim_imply f2)).
+        apply (equiv_imply_cong_r _ _ _ (equiv_sym _ _ H2)).
+        apply (equiv_imply_cong_l _ _ _ (equiv_sym _ _ H1)).
+        apply equiv_imply_or.
+Qed.
 
 Fixpoint height (f : formula) : nat :=
     match f with
