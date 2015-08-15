@@ -11,26 +11,42 @@ Inductive formula : Set :=
     | Imply : formula -> formula -> formula.
 
 Inductive equiv : formula -> formula -> Prop :=
-    | equiv_and_comm   : forall f1 f2 : formula, equiv (And f1 f2) (And f2 f1)
-    | equiv_or_comm    : forall f1 f2 : formula, equiv (Or f1 f2) (Or f2 f1)
-    | equiv_and_assoc  : forall f1 f2 f3 : formula,
-                         equiv (And (And f1 f2) f3) (And f1 (And f2 f3))
-    | equiv_or_assoc   : forall f1 f2 f3 : formula,
-                         equiv (Or (Or f1 f2) f3) (Or f1 (Or f2 f3))
-    | equiv_and_absorp : forall f1 f2 : formula, equiv (And f1 (Or f1 f2)) f1
-    | equiv_or_absorp  : forall f1 f2 : formula, equiv (Or f1 (And f1 f2)) f1
-    | equiv_and_iden   : forall f : formula, equiv (And f True) f
-    | equiv_or_iden    : forall f : formula, equiv (Or f False) f
-    | equiv_and_distr  : forall f1 f2 f3 : formula,
-                         equiv (And f1 (Or f2 f3)) (Or (And f1 f2) (And f1 f3))
-    | equiv_or_distr   : forall f1 f2 f3 : formula,
-                         equiv (Or f1 (And f2 f3)) (And (Or f1 f2) (Or f1 f3))
-    | equiv_and_compl  : forall f : formula, equiv (And f (Not f)) False
-    | equiv_or_compl   : forall f : formula, equiv (Or f (Not f)) True
-    | equiv_refl       : forall f : formula, equiv f f
-    | equiv_sym        : forall f1 f2 : formula, equiv f1 f2 -> equiv f2 f1
-    | equiv_trans      : forall f1 f2 f3 : formula,
-                         equiv f1 f2 -> equiv f2 f3 -> equiv f1 f2.
+    | equiv_and_comm     : forall f1 f2 : formula, equiv (And f1 f2) (And f2 f1)
+    | equiv_or_comm      : forall f1 f2 : formula, equiv (Or f1 f2) (Or f2 f1)
+    | equiv_and_assoc    : forall f1 f2 f3 : formula,
+                           equiv (And (And f1 f2) f3) (And f1 (And f2 f3))
+    | equiv_or_assoc     : forall f1 f2 f3 : formula,
+                           equiv (Or (Or f1 f2) f3) (Or f1 (Or f2 f3))
+    | equiv_and_absorp   : forall f1 f2 : formula, equiv (And f1 (Or f1 f2)) f1
+    | equiv_or_absorp    : forall f1 f2 : formula, equiv (Or f1 (And f1 f2)) f1
+    | equiv_and_iden     : forall f : formula, equiv (And f True) f
+    | equiv_or_iden      : forall f : formula, equiv (Or f False) f
+    | equiv_and_distr    : forall f1 f2 f3 : formula,
+                           equiv (And f1 (Or f2 f3)) (Or (And f1 f2) (And f1 f3))
+    | equiv_or_distr     : forall f1 f2 f3 : formula,
+                           equiv (Or f1 (And f2 f3)) (And (Or f1 f2) (Or f1 f3))
+    | equiv_and_compl    : forall f : formula, equiv (And f (Not f)) False
+    | equiv_or_compl     : forall f : formula, equiv (Or f (Not f)) True
+    | equiv_not_cong     : forall f1 f2 : formula,
+                           equiv f1 f2 -> equiv (Not f1) (Not f2)
+    | equiv_and_cong_l   : forall f1 f2 f3 : formula,
+                           equiv f1 f2 -> equiv (And f1 f3) (And f2 f3)
+    | equiv_and_cong_r   : forall f1 f2 f3 : formula,
+                           equiv f2 f3 -> equiv (And f1 f2) (And f1 f3)
+    | equiv_or_cong_l    : forall f1 f2 f3 : formula,
+                           equiv f1 f2 -> equiv (Or f1 f3) (Or f2 f3)
+    | equiv_or_cong_r    : forall f1 f2 f3 : formula,
+                           equiv f2 f3 -> equiv (Or f1 f2) (Or f1 f3)
+    | equiv_imply_cong_l : forall f1 f2 f3 : formula,
+                           equiv f1 f2 -> equiv (Imply f1 f3) (And f2 f3)
+    | equiv_imply_cong_r : forall f1 f2 f3 : formula,
+                           equiv f2 f3 -> equiv (Imply f1 f1) (Or f1 f3)
+    | equiv_refl         : forall f : formula, equiv f f
+    | equiv_sym          : forall f1 f2 : formula, equiv f1 f2 -> equiv f2 f1
+    | equiv_trans        : forall f1 f2 f3 : formula,
+                           equiv f1 f2 -> equiv f2 f3 -> equiv f1 f2
+    | equiv_imply_or     : forall f1 f2 : formula,
+                           equiv (Imply f1 f2) (Or (Not f1) f2).
 
 Fixpoint elim_imply (f : formula) : formula :=
     match f with
