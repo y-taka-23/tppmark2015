@@ -192,6 +192,11 @@ Proof.
            (Max.le_max_l _ _) (lt_n_Sn _)).
 Defined.
 
+Lemma move_not_aux_equiv :
+    forall f : formula, equiv (move_not_aux f) f.
+Proof.
+Admitted.
+
 Fixpoint move_not (f : formula) : formula :=
     match f with
     | True   => True
@@ -210,6 +215,63 @@ Fixpoint move_not (f : formula) : formula :=
     | Or    f1 f2 => Or    (move_not f1) (move_not f2)
     | Imply f1 f2 => Imply (move_not f1) (move_not f2)
     end.
+
+Lemma move_not_equiv :
+    forall f : formula, equiv (move_not f) f.
+Proof.
+    induction f as [| | n | f1 H1 | f1 H1 f2 H2 | f1 H1 f2 H2 | f1 H1 f2 H2];
+    simpl.
+
+        (* Case : f = True *)
+        apply equiv_refl.
+
+        (* Case : f = False *)
+        apply equiv_refl.
+
+        (* Case : f = Var n *)
+        apply equiv_refl.
+
+        (* Case : f = Not f1 *)
+        destruct f1 as [| | m | f1' | f1' f2' | f1' f2' | f1' f2'];
+        simpl.
+
+            (* Case : f1 = True *)
+            apply (equiv_not_cong _ _ (equiv_refl _)).
+
+            (* Case : f1 = False *)
+            apply (equiv_not_cong _ _ (equiv_refl _)).
+
+            (* Case : f1 = Var n *)
+            apply (equiv_not_cong _ _ (equiv_refl _)).
+
+            (* Case : f1 = Not f1' *)
+            apply move_not_aux_equiv.
+
+            (* Case : f1 = And f1' f2' *)
+            apply move_not_aux_equiv.
+
+            (* Case : f1 = Or f1' f2' *)
+            apply move_not_aux_equiv.
+
+            (* Case : f1 = Imply f1' f2' *)
+            simpl in H1.
+            apply (equiv_not_cong _ _ H1).
+
+        (* Case : f = And f1 f2 *)
+        apply equiv_trans with (And f1 (move_not f2)).
+        apply (equiv_and_cong_l _ _ _ H1).
+        apply (equiv_and_cong_r _ _ _ H2).
+
+        (* Case : f = Or f1 f2 *)
+        apply equiv_trans with (Or f1 (move_not f2)).
+        apply (equiv_or_cong_l _ _ _ H1).
+        apply (equiv_or_cong_r _ _ _ H2).
+
+        (* Case : f = Imply f1 f2 *)
+        apply equiv_trans with (Imply f1 (move_not f2)).
+        apply (equiv_imply_cong_l _ _ _ H1).
+        apply (equiv_imply_cong_r _ _ _ H2).
+Qed.
 
 Fixpoint eval_const (f : formula) : formula :=
     match f with
