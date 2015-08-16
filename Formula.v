@@ -192,11 +192,6 @@ Proof.
            (Max.le_max_l _ _) (lt_n_Sn _)).
 Defined.
 
-Lemma move_not_aux_equiv :
-    forall f : formula, equiv (move_not_aux f) f.
-Proof.
-Admitted.
-
 Fixpoint move_not (f : formula) : formula :=
     match f with
     | True   => True
@@ -245,13 +240,13 @@ Proof.
             apply (equiv_not_cong _ _ (equiv_refl _)).
 
             (* Case : f1 = Not f1' *)
-            apply move_not_aux_equiv.
+            admit.
 
             (* Case : f1 = And f1' f2' *)
-            apply move_not_aux_equiv.
+            admit.
 
             (* Case : f1 = Or f1' f2' *)
-            apply move_not_aux_equiv.
+            admit.
 
             (* Case : f1 = Imply f1' f2' *)
             simpl in H1.
