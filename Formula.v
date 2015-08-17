@@ -48,6 +48,28 @@ Inductive equiv : formula -> formula -> Prop :=
     | equiv_imply_or     : forall f1 f2 : formula,
                            equiv (Imply f1 f2) (Or (Not f1) f2).
 
+Lemma equiv_not_true :
+    equiv (Not True) False.
+Proof.
+    apply equiv_trans with (And (Not True) True).
+    apply equiv_sym.
+    apply equiv_and_iden.
+    apply equiv_trans with (And True (Not True)).
+    apply equiv_and_comm.
+    apply equiv_and_compl.
+Qed.
+
+Lemma equiv_not_false :
+    equiv (Not False) True.
+Proof.
+    apply equiv_trans with (Or (Not False) False).
+    apply equiv_sym.
+    apply equiv_or_iden.
+    apply equiv_trans with (Or False (Not False)).
+    apply equiv_or_comm.
+    apply equiv_or_compl.
+Qed.
+
 Fixpoint elim_imply (f : formula) : formula :=
     match f with
     | True        => True
