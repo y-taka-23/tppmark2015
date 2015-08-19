@@ -322,6 +322,25 @@ Fixpoint eval_const (f : formula) : formula :=
         end
     end.
 
+Lemma eval_const_equiv :
+    forall f : formula, equiv (eval_const f) f.
+Proof.
+    destruct f as [| | n | f1 | f1 f2 | f1 f2 | f1 f2];
+    try apply equiv_refl.
+
+        (* Case : f = Not f1 *)
+        admit.
+
+        (* Case : f = And f1 f2 *)
+        admit.
+
+        (* Case : f = Or f1 f2 *)
+        admit.
+
+        (* Case : f = Imply f1 f2 *)
+        admit.
+Qed.
+
 Fixpoint or_size (f : formula) : nat :=
     match f with
     | True        => 0
