@@ -329,7 +329,31 @@ Proof.
     try apply equiv_refl.
 
         (* Case : f = Not f1 *)
-        admit.
+        destruct f1 as [| | n | f1' | f1' f2' | f1' f2' | f1' f2'].
+
+            (* Case : f1 = True *)
+            simpl.
+            apply (equiv_sym _ _ (equiv_not_true)).
+
+            (* Case : f1 = False *)
+            simpl.
+            apply (equiv_sym _ _ (equiv_not_false)).
+
+            (* Case : f1 = Var n *)
+            simpl.
+            apply equiv_refl.
+
+            (* Csse : f1 = Not f1' *)
+            admit.
+
+            (* Case : f1 = And f1' f2' *)
+            admit.
+
+            (* Case : f1 = Or f1' f2' *)
+            admit.
+
+            (* Case : f1 = Imply f1' f2' *)
+            admit.
 
         (* Case : f = And f1 f2 *)
         admit.
